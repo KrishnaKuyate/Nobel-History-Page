@@ -10,5 +10,7 @@ Well, let's find out! In this project, you get to explore patterns and trends in
 
 Result:
 
+http://rpubs.com/krishnakuyate/Nobel_History
+
  https://krishnakuyate.shinyapps.io/Nobel_Hist/
       
