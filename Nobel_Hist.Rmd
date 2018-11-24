@@ -1,0 +1,317 @@
+---
+title: ".........................Nobel History............................"
+output: html_document
+runtime : shiny
+---
+
+
+
+![](K1.jpg)
+
+
+<font size="4">**The Nobel Prize is perhaps the world's most well known scientific award. Every year it is given to scientists and scholars in chemistry, literature, physics, medicine, economics, and peace. The first Nobel Prize was handed out in 1901, and at that time the prize was Eurocentric and male-focused, but nowadays it's not biased in any way.**</font>
+
+```{r include=FALSE}
+##Packge:
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(plotly)
+library(rgeos)
+library(maptools)
+library(maps)
+library("shiny")
+library(DT)
+#N1
+###Load data file:
+archive <- read_csv("archive.csv")
+
+###Convert into data frame:
+as.data.frame(archive)->nobel_data
+#N2
+####Understand the dataset structure:
+##View dataset
+
+##Datset Variable:
+ncol(nobel_data)
+#Variable name:
+colnames(nobel_data)
+##Dataset observations:
+nrow(nobel_data)
+##Dataset Structure:
+str(nobel_data)
+##Summary:
+summary(nobel_data)
+
+```
+
+
+#{.tabset .tabset-fade .tabset-pills}
+
+<marquee behavior="scroll" direction="left"><font size="6"> **For The Greatest Benefit To Humankind**</font></marquee>
+
+
+##History
+![](K2.jpg)
+
+###For the greatest benefit to humankind
+
+**Alfred Nobel was an inventor, entrepreneur, scientist and businessman who also wrote poetry and drama. His varied interests are reflected in the prize he established. and which he lay the foundation for in 1895 when he wrote his last will, leaving much of his wealth to the establishment of the prize.**  
+
+**Since 1901, the Nobel Prize has been honoring men and women from around the world for outstanding achievements in physics, chemistry, physiology or medicine, literature, and for work in peace.**
+
+a. **Born: 21 October 1833**
+b. **Died: 10 December 1896**
+c. **Known for: inventing dynamite and holder of 355 patents**
+d. **Professions: chemist, inventor, engineer, entrepreneur, businessman, author**
+e. **Will: left 31 million SEK (about 265 million dollar today) to fund the prizes**
+
+[Find Out About More About Alfred Nobel ](https://www.nobelprize.org/alfred-nobel/biographical-information/)
+
+##List 
+```{r  echo=FALSE}
+library(knitr)
+library(kableExtra)
+kable(nobel_data)%>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"),position = "left",font_size = 10)%>%
+  column_spec(4, width = "40em")%>% row_spec(1:800, bold = T, color = "#003311", background = "#b3ffcc")%>%scroll_box(width = "920px",height="800px")->for_table
+for_table
+
+
+```
+
+
+
+##Category
+
+![](K3.jpg)
+
+**There are six categories of prizes, out of which all are given each year. That's is, there are six eligible prizes every year. They are awarded for Outstanding contributions for humanity in chemistry, economics, literature, peace, physics, or physiology or medicine.**
+
+```{r include=FALSE}
+##Total No.of Nobel Prize Winner
+na.omit(nobel_data$`Laureate ID`)->Nobel_winner_Tcount
+length(Nobel_winner_Tcount)
+
+##Categorywise
+nobel_data$Category
+nobel_data%>%count(Category)->Categorywise_Tcoun
+as.data.frame(Categorywise_Tcoun)->Categorywise_Tcoun
+colnames(Categorywise_Tcoun)<-c("Catrgory","Total Prize Winner")
+
+```
+
+###Statistics :
+```{r echo=FALSE}
+#Table:
+
+kable(Categorywise_Tcoun)%>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"),position = "center",font_size = 15)%>%row_spec(1:6, bold = T, color = "#440066", background = "#eeccff")
+```
+```{r echo=FALSE}
+#Graph:
+ggplot(Categorywise_Tcoun,aes(x=Catrgory,y=`Total Prize Winner`,fill=Catrgory))+geom_bar(stat ="identity",position = "dodge")+
+  ggtitle("$..Category and Total Nobel Prize Winner..$")+theme(plot.title = element_text(size = 18,colour = "#cc66ff"))+
+  theme(axis.title = element_text(size=15,colour ="#9900e6" ),axis.text = element_text(angle = 45,hjust=1,size = 12,colour = "#7700b3"))+
+  geom_point()+theme(axis.line.y = element_line(size = 2,colour = "#dd99ff"),axis.line.x= element_line(size = 2,colour = "#c44dff"))
+```
+
+
+##Male-Female
+![](K4.jpg)
+
+**While the number of female Nobel laureates is gradually increasing, there is still a huge gender gap in the gender of those winning Nobel Prizes**
+
+```{r include=FALSE}
+####Male-Female
+nobel_data$Sex
+nobel_data%>%count(Sex)->Se_count
+
+na.omit(Se_count)->Se_count
+colnames(Se_count)<-c("Sex","Total Count")
+data.frame(nobel_data$Category,nobel_data$Sex)->df
+df%>%count(df$nobel_data.Sex,df$nobel_data.Category)->df2
+na.omit(df2)->df2
+colnames(df2)<-c("Sex","Category","Total Prize Winner")
+
+```
+
+###Male -Female and Nobel Prize Winner :
+```{r echo=FALSE}
+#Table:
+kable(Se_count)%>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"),position ="center",font_size = 15)%>% row_spec(1:2, bold = T, color = "#00664d", background = "#80ffdf")
+
+```
+
+```{r echo=FALSE}
+#Graph:
+ggplot(Se_count,aes(x=Sex,y=`Total Count`,fill=Sex))+ggtitle("$..Male-Female Nobel Prize Winner..$ ")+
+  geom_bar(stat ="identity",position = "dodge")+theme(plot.title = element_text(size = 18,colour = "#009999"))+
+  theme(axis.title = element_text(size=15,colour ="#00cccc" ),axis.text = element_text(angle = 45,hjust=1,size = 12,colour = "#00e6e6"))+
+  geom_point()+theme(axis.line.y = element_line(size = 2,colour = "#66ffff"),axis.line.x= element_line(size = 2,colour = "#1affff"))
+```
+
+###Male -Female : Category and Nobel Prize Winner :
+```{r echo=FALSE}
+#Tabel:
+
+kable(df2)%>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"),position = "center",font_size = 15)%>%
+   row_spec(1:12, bold = T, color = "#00664d", background = "#80ffdf")
+```
+
+```{r echo=FALSE}
+#Graph:
+plot_ly(x=df2$Sex, y=df2$Category, z=df2$`Total Prize Winner`, type="scatter3d", mode="markers",color =df2$Category)%>%
+  layout(
+    title = "Male-Female:Category-Nobel Prize Winners",
+    scene = list(
+      xaxis = list(title = "Sex"),
+      yaxis = list(title = "Category"),
+      zaxis = list(title = "Nobel Prize Winners")
+    ))
+
+```
+
+##Laureates
+![](K5.jpg)
+
+
+
+**Nobel Prize Lessons are reliable and so easy to use, that a teacher can look through the manual, watch the slides, print the texts for students and then start the class. The material is based on well established sources, and point to further reading from the prize-awarding institutions.**
+
+```{r include=FALSE}
+#######Laureate Type
+
+nobel_data$`Laureate Type`
+nobel_data%>%count(nobel_data$`Laureate Type`)->Lau_df
+as.data.frame(Lau_df)->Lau_df1
+colnames(Lau_df1)<-c("Laureate Type","Total Prize Winner")
+```
+
+###Nobel Prize and Laureates:
+
+```{r echo=FALSE}
+#Table:
+
+kable(Lau_df1)%>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"),position = "center",font_size = 15)%>%
+   row_spec(1:2, bold = T, color = "#00664d", background = "#80ffdf")
+```
+
+```{r echo=FALSE}
+#Graph:
+ggplot(Lau_df1,aes(x=`Laureate Type`,y=`Total Prize Winner`,fill=`Laureate Type`))+ggtitle("$..Laureate Type and Nobel Prize Winner..$")+
+  geom_bar(stat ="identity",position = "dodge")+theme(plot.title = element_text(size = 18,colour = "#009999"))+
+  theme(axis.title = element_text(size=15,colour ="#00cccc" ),axis.text = element_text(angle = 45,hjust=1,size = 12,colour = "#00e6e6"))+
+  geom_point()+theme(axis.line.y = element_line(size = 2,colour = "#66ffff"),axis.line.x= element_line(size = 2,colour = "#1affff"))
+
+```
+
+###Nobel Prize and Laureates: Category :
+
+```{r include=FALSE}
+###Laureate Type-Category:Count
+data.frame(nobel_data$`Laureate Type`,nobel_data$Category)->Lau_cat
+Lau_cat%>%count(Lau_cat$nobel_data..Laureate.Type.,Lau_cat$nobel_data.Category)->Lat1
+as.data.frame(Lat1)->Lat2
+colnames(Lat2)<-c("Laureate Type","Category","Total Prize Winners")
+```
+
+```{r echo=FALSE}
+#Table:
+
+kable(Lat2)%>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"),position = "center",font_size = 15)%>%
+   row_spec(1:7, bold = T, color = "#00664d", background = "#80ffdf")
+```
+
+
+```{r echo=FALSE,error=FALSE,message=FALSE,warning=FALSE}
+#Graph:
+plot_ly(x=Lat2$`Laureate Type`, y=Lat2$Category, z=Lat2$`Total Prize Winners`, type="bar", mode="markers",color =Lat2$Category)
+```
+
+
+##Sharing
+
+![](K7.jpg)
+
+**We live in a world where unfortunately the distinction between true and false appears to become increasingly blurred by manipulation of facts, by exploitation of uncritical minds, and by the pollution of the language.**
+
+
+###Sharing:Category-Nobel Prize Winners
+
+```{r include=FALSE}
+#####Sharing:
+nobel_data%>%count(nobel_data$Category,nobel_data$`Prize Share`)->sh_df
+colnames(sh_df)<-c("Category","Prize Share","Nobel Prize")
+```
+
+```{r echo=FALSE}
+#Table:
+kable(sh_df)%>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"),position = "left",font_size = 15)%>%
+   row_spec(1:20, bold = T, color = "#660000", background = "#ffcccc")
+```
+
+```{r echo=FALSE}
+#Graph:
+plot_ly(x=sh_df$Category, y=sh_df$`Prize Share`, z=sh_df$`Nobel Prize`, type="scatter3d", mode="markers",color =sh_df$Category)%>%
+layout(
+    title = "Sharing:Category-Nobel Prize Winners",
+    scene = list(
+      xaxis = list(title = "Category"),
+      yaxis = list(title = "Sharing"),
+      zaxis = list(title = "Nobel Prize Winners")
+    ))
+
+```
+
+
+
+
+**Not only are there meaningless questions, but many of the problems with which the human intellect has tortured itself turn out to be only 'pseudo problems,' because they can be formulated only in terms of questions which are meaningless. Many of the traditional problems of philosophy, of religion, or of ethics, are of this character. Consider, for example, the problem of the freedom of the will. You maintain that you are free to take either the right- or the left-hand fork in the road. I defy you to set up a single objective criterion by which you can prove after you have made the turn that you might have made the other. The problem has no meaning in the sphere of objective activity; it only relates to my personal subjective feelings while making the decision**
+
+
+
+
+
+
+
+##Country
+
+![](K6.jpg)
+
+**Human curiosity, the urge to know, is a powerful force and is perhaps the best secret weapon of all in the struggle to unravel the workings of the natural world**
+
+```{r include=FALSE}
+nobel_data%>%count(nobel_data$`Organization Country`)->Country_count_df
+colnames(Country_count_df)<-c("Country Name","Nobel Prize")
+nobel_data%>%count(nobel_data$`Birth Country`)->Birth_ccount
+colnames(Birth_ccount)<-c("Country Name","Nobel Prize")
+rbind(Country_count_df,Birth_ccount)->Country_count_df1
+Country_count_df1%>%count(Country_count_df1$`Country Name`)->Country_count_df2
+colnames(Country_count_df2)<-c("Country Name","Nobel Prize")
+```
+
+###Country:Nobel Prize Winners
+```{r echo=FALSE}
+##Table:
+
+kable(Country_count_df2)%>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"),position = "center",font_size = 15)%>%row_spec(1:120, bold = T, color = "#00264d", background = "#80bfff")%>%scroll_box(height="500px")
+```
+
+```{r echo=FALSE}
+#map-plot
+Country_count_df2->plot.data
+```
+
+```{r include=FALSE}
+WorldData <- map_data('world')
+head(WorldData, 100)
+Total <- WorldData[WorldData$region %in% plot.data$`Country Name`, ]
+Total$value <- plot.data$`Nobel Prize`[match(Total$region, plot.data$`Country Name`)]
+```
+
+![](K8.png)
+```{r echo=FALSE}
+
+ggplot(Total, aes(x=long, y=lat, group = group, fill = value)) + geom_polygon() 
+
+```
+
